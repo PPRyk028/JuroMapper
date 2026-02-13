@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>AHK Script Detection</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: #61dafb;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        #input-area {
+            width: 100%;
+            height: 60px;
+            background: #2d2d2d;
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: #fff;
+            padding: 15px;
+            font-size: 1.2rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+            #input-area:focus {
+                border-color: #61dafb;
+            }
+
+        .log-container {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 6px;
+            margin-top: 20px;
+            height: 450px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1.5fr;
+            padding: 8px 15px;
+            border-bottom: 1px solid #222;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+        }
+
+        .header {
+            background: #252526;
+            color: #858585;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+
+        .keydown {
+            color: #b5cea8;
+        }
+
+        .keyup {
+            color: #ce9178;
+        }
+
+        .special-warn {
+            color: #f44747;
+            background: rgba(244,71,71,0.1);
+            font-weight: bold;
+        }
+
+        .shift-active {
+            color: #c586c0;
+            font-weight: bold;
+        }
+
+        .clear-btn {
+            background: #444;
+            color: #ccc;
+            border: none;
+            padding: 8px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+            .clear-btn:hover {
+                background: #555;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Anti-Detection Test</h2>
+
+        <input type="text" id="input-area" placeholder="Enter something..." autocomplete="off">
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <button class="clear-btn" onclick="clearLog()">Clear Log</button>
+            <div id="status" style="font-size: 12px; color: #888; margin-bottom: 10px;">Waiting for input...</div>
+        </div>
+
+        <div class="log-container">
+            <div class="log-entry header">
+                <span>Event type</span>
+                <span>Key</span>
+                <span>Code</span>
+                <span>Shift Status</span>
+                <span>time interval</span>
+            </div>
+            <div id="log-list"></div>
+        </div>
+    </div>
+
+    <script>
+    const logList = document.getElementById('log-list');
+    const inputArea = document.getElementById('input-area');
+    const statusText = document.getElementById('status');
+    let lastTime = performance.now();
+
+    function addLog(e) {
+        const now = performance.now();
+        const diff = (now - lastTime).toFixed(2);
+        lastTime = now;
+
+        const div = document.createElement('div');
+        div.className = `log-entry ${e.type}`;
+
+        if (e.key === 'Process') div.classList.add('special-warn');
+
+        const shiftDisplay = e.shiftKey ? `<span class="shift-active">TRUE</span>` : `<span style="color:#555">false</span>`;
+
+        div.innerHTML = `
+            <span>${e.type}</span>
+            <span>${e.key}</span>
+            <span>${e.code || '--'}</span>
+            <span>${shiftDisplay}</span>
+            <span style="color: #6a9955">+${diff}ms</span>
+        `;
+
+        logList.insertBefore(div, logList.firstChild);
+        statusText.innerText = `Last active: ${new Date().toLocaleTimeString()}`;
+    }
+
+    function clearLog() { logList.innerHTML = ''; }
+
+    inputArea.addEventListener('keydown', addLog);
+    inputArea.addEventListener('keyup', addLog);
+
+    inputArea.addEventListener('compositionstart', () => {
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        div.style.background = 'rgba(255, 165, 0, 0.2)';
+        div.innerHTML = `<span style="grid-column: span 5; color: orange; text-align: center;">⚠️  "IME composition start detected (may expose script identity)</span>`;
+        logList.insertBefore(div, logList.firstChild);
+    });
+    </script>
+
+</body>
+</html>

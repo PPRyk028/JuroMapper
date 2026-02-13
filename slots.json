@@ -1,0 +1,28 @@
+{
+  "slots": [
+    {
+      "id": 1,
+      "hotkey": "Ctrl+Alt+1",
+      "file": "Prompt_1.txt",
+      "content": "Respond in a single word, use English only, use characters appeared in ascii code only:"
+    },
+    {
+      "id": 2,
+      "hotkey": "Ctrl+Alt+2",
+      "file": "Prompt_2.txt",
+      "content": "Respond in a single sentence , use English only, use characters appeared in ascii code only:"
+    },
+    {
+      "id": 3,
+      "hotkey": "Ctrl+Alt+3",
+      "file": "Prompt_3.txt",
+      "content": "Respond in a single paragraph , use English only, use characters appeared in ascii code only:"
+    },
+    {
+      "id": 4,
+      "hotkey": "Ctrl+Alt+4",
+      "file": "Prompt_4.txt",
+      "content": "Write an Essay, use English only, use characters appeared in ascii code only:"
+    }
+  ]
+}
